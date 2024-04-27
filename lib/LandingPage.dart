@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:just_aqua_01/Ammonia_page.dart';
 import 'package:just_aqua_01/Turbidity_page.dart';
+import 'package:just_aqua_01/ph.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -42,7 +44,7 @@ class _LandingPageState extends State<LandingPage> {
     _checkFishTypeSelection();
     _initializeLocalNotifications();
     _requestNotificationPermissions();
-    _configureFirebaseMessaging();
+    // _configureFirebaseMessaging();
   }
 
   void _initializeLocalNotifications() {
@@ -67,17 +69,17 @@ class _LandingPageState extends State<LandingPage> {
     print('Background message received: ${message.data}');
   }
 
-  void _configureFirebaseMessaging() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Foreground message received: ${message.data}');
-      if (message.notification != null) {
-        _showTemperatureNotification(message.notification!.title ?? '',
-            message.notification!.body ?? '');
-      }
-    });
+  // void _configureFirebaseMessaging() {
+  //   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  //     print('Foreground message received: ${message.data}');
+  //     if (message.notification != null) {
+  //       _showTemperatureNotification(message.notification!.title ?? '',
+  //           message.notification!.body ?? '');
+  //     }
+  //   });
 
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  }
+  //   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // }
 
   void _checkFishTypeSelection() {
     _database
@@ -488,100 +490,116 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
-  Widget buildSensorCard(
-      String sensorName, String sensorValue, IconData iconData, String unit) {
-    Color cardColor = Color.fromARGB(70, 66, 66, 66);
-    VoidCallback? onTapHandler;
+ Widget buildSensorCard(
+    String sensorName, String sensorValue, IconData iconData, String unit) {
+  Color cardColor = Color.fromARGB(70, 66, 66, 66);
+  VoidCallback? onTapHandler;
 
-    if (sensorName == 'Temperature') {
-      onTapHandler = () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => TemperaturePage()),
-        );
-      };
-    } else if (sensorName == 'Turbidity') {
-      onTapHandler = () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => TurbidityPage()),
-        );
-      };
+  if (sensorName == 'Temperature') {
+    onTapHandler = () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => TemperaturePage()),
+      );
+    };
+  } else if (sensorName == 'Turbidity') {
+    onTapHandler = () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => TurbidityPage()),
+      );
+    };
+  } else if (sensorName == 'pH') {
+    onTapHandler = () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ph()),
+      );
+    };
+  } else if (sensorName == 'Ammonia') {
+    onTapHandler = () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AmmoniaPage()), // Replace "AmmoniaPage" with your actual Ammonia page
+      );
+    };
+  }
+
+  if (sensorName == 'Temperature' &&
+      double.tryParse(sensorValue) != null &&
+      _selectedFishType.isNotEmpty) {
+    double currentTemperature = double.parse(sensorValue);
+    if (currentTemperature > _temperatureThreshold) {
+      cardColor = Colors.red;
     }
+  }
 
-    if (sensorName == 'Temperature' &&
-        double.tryParse(sensorValue) != null &&
-        _selectedFishType.isNotEmpty) {
-      double currentTemperature = double.parse(sensorValue);
-      if (currentTemperature > _temperatureThreshold) {
-        cardColor = Colors.red;
-      }
-    }
-
-    return GestureDetector(
-      onTap: onTapHandler,
-      child: Card(
-        color: cardColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Container(
-          constraints: BoxConstraints(minHeight: 150),
-          child: Padding(
-            padding: const EdgeInsets.all(17),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Icon(
-                    iconData,
-                    color: Colors.white,
+  return GestureDetector(
+    onTap: onTapHandler,
+    child: Card(
+      color: cardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Container(
+        constraints: BoxConstraints(minHeight: 150),
+        child: Padding(
+          padding: const EdgeInsets.all(17),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: Icon(
+                  iconData,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    sensorName,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 255, 255, 255),
+                    ),
                   ),
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      sensorName,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 255, 255),
-                      ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  Text(
+                    sensorValue,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 177, 177, 177),
                     ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Row(
-                  children: [
-                    Text(
-                      sensorValue,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 177, 177, 177),
-                      ),
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    unit,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 177, 177, 177),
                     ),
-                    SizedBox(width: 5),
-                    Text(
-                      unit,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 177, 177, 177),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+
 
   Widget buildProfileContent() {
     return SingleChildScrollView(

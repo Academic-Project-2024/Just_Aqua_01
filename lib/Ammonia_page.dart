@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class ph extends StatefulWidget {
+class AmmoniaPage extends StatefulWidget {
   @override
-  _phState createState() => _phState();
+  _AmmoniaPageState createState() => _AmmoniaPageState();
 }
 
-class _phState extends State<ph> {
-  double _currentPh = 0.0; // Initial turbidity
-  double _maxPh = 14;
+class _AmmoniaPageState extends State<AmmoniaPage> {
+  double _currentTurbidity = 0.0; // Initial turbidity
+  double _maxTurbidity = 100.0;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class _phState extends State<ph> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
-                'Ph',
+                'Ammonia',
                 style: TextStyle(
                   fontSize: 32.0,
                   fontWeight: FontWeight.bold,
@@ -42,7 +42,7 @@ class _phState extends State<ph> {
                     height: 200.0,
                     child: CircularProgressIndicator(
                       strokeWidth: 5.0,
-                      value: _currentPh / _maxPh,
+                      value: _currentTurbidity / _maxTurbidity,
                       backgroundColor: Color.fromARGB(255, 164, 164, 164),
                       valueColor: AlwaysStoppedAnimation<Color>(
                         Color.fromARGB(255, 34, 71, 255),
@@ -53,11 +53,11 @@ class _phState extends State<ph> {
                     onPanUpdate: (details) {
                       setState(() {
                         double sensitivity = 1.0;
-                        _currentPh -= details.delta.dy * sensitivity;
-                        if (_currentPh < 0) {
-                          _currentPh = 0;
-                        } else if (_currentPh > _maxPh) {
-                          _currentPh = _maxPh;
+                        _currentTurbidity -= details.delta.dy * sensitivity;
+                        if (_currentTurbidity < 0) {
+                          _currentTurbidity = 0;
+                        } else if (_currentTurbidity > _maxTurbidity) {
+                          _currentTurbidity = _maxTurbidity;
                         }
                       });
                     },
@@ -79,7 +79,7 @@ class _phState extends State<ph> {
                       ),
                       child: Center(
                         child: Text(
-                          '${_currentPh.toStringAsFixed(1)}',
+                          '${_currentTurbidity.toStringAsFixed(1)}',
                           style: TextStyle(
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
@@ -95,7 +95,7 @@ class _phState extends State<ph> {
             SizedBox(height: 20),
             Center(
               child: Text(
-                getTurbidityEffect(_currentPh),
+                getTurbidityEffect(_currentTurbidity),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
@@ -107,7 +107,7 @@ class _phState extends State<ph> {
             SizedBox(height: 50),
             Center(
               child: Text(
-                'Low PH',
+                'Low ammonia',
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.white,
@@ -116,7 +116,7 @@ class _phState extends State<ph> {
             ),
             SizedBox(height: 10.0),
             Center(
-              child: Text('$_maxPh',
+              child: Text('$_maxTurbidity',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
